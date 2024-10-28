@@ -26,7 +26,7 @@ export function setupDirectories() { // 17:27
  */
 export function convertVideo(rawVideoName: string, processedVideoName: string) {
     return new Promise<void>((resolve, reject) => {
-        ffmpeg(`{localRawVideoPath}/${rawVideoName}`)
+        ffmpeg(`${localRawVideoPath}/${rawVideoName}`)
         .outputOptions("-vf", "scale=-1:360") // 360p resolution
         .on("end", () => {
             console.log("Video processing finished successfully.");
@@ -36,7 +36,7 @@ export function convertVideo(rawVideoName: string, processedVideoName: string) {
             console.log(`An error occurred: ${err.message}`);
             reject(err);
         })
-        .save(`{localProcessedVideoPath}/${processedVideoName}`);
+        .save(`${localProcessedVideoPath}/${processedVideoName}`);
     });
 }
 
@@ -48,7 +48,7 @@ export function convertVideo(rawVideoName: string, processedVideoName: string) {
 export async function downloadRawVideo(fileName: string) {
     await storage.bucket(rawVideoBucketName)
         .file(fileName)
-        .download({destination: `$(localRawVideoPath)/${fileName}`});
+        .download({destination: `${localRawVideoPath}/${fileName}`});
     console.log(
         `gs://${rawVideoBucketName}/${fileName} downloaded to ${localRawVideoPath}/${fileName}.`
     )
@@ -61,7 +61,7 @@ export async function downloadRawVideo(fileName: string) {
  */
 export async function uploadProcessedVideo(fileName: string) {
     const bucket = storage.bucket(processedVideoBucketName);
-    await bucket.upload(`$(localProcessedVideoPath)/${fileName}`, {
+    await bucket.upload(`${localProcessedVideoPath}/${fileName}`, {
         destination: fileName
     });
     console.log(
