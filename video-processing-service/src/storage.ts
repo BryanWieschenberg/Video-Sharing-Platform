@@ -53,7 +53,7 @@ export async function downloadRawVideo(fileName: string) {
         `gs://${rawVideoBucketName}/${fileName} downloaded to ${localRawVideoPath}/${fileName}.`
     )
 }
-s
+
 /**
  * @param fileName - File name to upload from the
  * {@link localProcessedVideoPath} bucket into the {@link processedVideoBucketName} folder
