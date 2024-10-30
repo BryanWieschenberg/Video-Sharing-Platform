@@ -6,8 +6,8 @@ import fs from 'fs';
 import ffmpeg from 'fluent-ffmpeg';
 
 const storage = new Storage();
-const rawVideoBucketName = "bnw-yt-raw-videos";
-const processedVideoBucketName = "bnw-yt-processed-videos";
+const rawVideoBucketName = "bnw-raw-videos";
+const processedVideoBucketName = "bnw-processed-videos";
 const localRawVideoPath = "./raw-videos";
 const localProcessedVideoPath = "./processed-videos";
 
