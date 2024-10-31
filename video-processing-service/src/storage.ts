@@ -45,13 +45,26 @@ export function convertVideo(rawVideoName: string, processedVideoName: string) {
  * {@link rawVideoBucketName} bucket into the {@link localRawVideoPath} folder
  * @returns A promise that resolves when the file's been downloaded
  */
+// export async function downloadRawVideo(fileName: string) {
+//     await storage.bucket(rawVideoBucketName)
+//         .file(fileName)
+//         .download({destination: `${localRawVideoPath}/${fileName}`});
+//     console.log(
+//         `gs://${rawVideoBucketName}/${fileName} downloaded to ${localRawVideoPath}/${fileName}.`
+//     )
+// }
+
 export async function downloadRawVideo(fileName: string) {
-    await storage.bucket(rawVideoBucketName)
-        .file(fileName)
-        .download({destination: `${localRawVideoPath}/${fileName}`});
-    console.log(
-        `gs://${rawVideoBucketName}/${fileName} downloaded to ${localRawVideoPath}/${fileName}.`
-    )
+    const file = storage.bucket(rawVideoBucketName).file(fileName);
+    const [exists] = await file.exists();
+    
+    if (!exists) {
+        console.log(`File gs://${rawVideoBucketName}/${fileName} does not exist.`);
+        return; // Skip downloading if the file doesn't exist
+    }
+
+    await file.download({destination: `${localRawVideoPath}/${fileName}`});
+    console.log(`gs://${rawVideoBucketName}/${fileName} downloaded to ${localRawVideoPath}/${fileName}.`);
 }
 
 /**
