@@ -88,7 +88,7 @@ export async function uploadProcessedVideo(fileName: string) {
  * {@link localRawVideoPath} folder
  * @returns A promise that resolves when the file's been deleted
  */
-export function deleteRawVideo(fileName: string) {
+export function deleteRawVideo(fileName: string): Promise<void> {
     return deleteFile(`${localRawVideoPath}/${fileName}`);
 }
 
@@ -108,7 +108,9 @@ export function deleteProcessedVideo(fileName: string) {
 function deleteFile(filePath: string): Promise<void> {
     return new Promise((resolve, reject) => {
         if (!fs.existsSync(filePath)) {
-            // reject(`File ${filePath} does not exist.`);
+            console.log(`File not found at ${filePath}, skipping the delete.`);
+            resolve(); // Resolve even if the file doesn't exist
+        } else {
             fs.unlink(filePath, (err) => {
                 if (err) {
                     console.log(`Failed to delete file at ${filePath}`, err);
@@ -117,10 +119,7 @@ function deleteFile(filePath: string): Promise<void> {
                     console.log(`File deleted at ${filePath}`);
                     resolve();
                 }
-            })
-        } else {
-            console.log(`File not found at ${filePath}, skipping the delete.`);
-            resolve();
+            });
         }
     });
 }
