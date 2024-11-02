@@ -1,6 +1,7 @@
 import express from "express";
 import ffmpeg from "fluent-ffmpeg";
 import { convertVideo, deleteProcessedVideo, deleteRawVideo, downloadRawVideo, setupDirectories, uploadProcessedVideo } from "./storage";
+import { isVideoNew, setVideo } from "./firestore";
 
 setupDirectories();
 const app = express();
@@ -29,8 +30,19 @@ async function processVideoHandler(req: express.Request, res: express.Response) 
         return res.status(400).send('Bad request: Missing filename.');
     }
 
-    const inputFileName = data.name;
+    const inputFileName = data.name; // Format of <UID>-<DATE>.<EXTENSION>
     const outputFileName = `processed-${inputFileName}`;
+    const videoId = inputFileName.split('-')[0];
+
+    if (!isVideoNew(videoId)) {
+        return res.status(400).send('Bad request: Video already processed.');
+    } else {
+        await setVideo(videoId, {
+            id: videoId,
+            uid: videoId.split('-')[0],
+            status: 'processing'
+        });
+    }
 
     // Download raw video from Cloud Storage
     await downloadRawVideo(inputFileName);
@@ -49,6 +61,11 @@ async function processVideoHandler(req: express.Request, res: express.Response) 
 
     // Upload processed video to Cloud Storage
     await uploadProcessedVideo(outputFileName);
+
+    await setVideo(videoId, {
+        status: 'processed',
+        filename: outputFileName,
+    });
 
     await Promise.all([
         deleteRawVideo(inputFileName),
