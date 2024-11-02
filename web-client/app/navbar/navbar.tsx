@@ -7,6 +7,7 @@ import SignIn from './sign-in';
 import { onAuthChangedHelper } from '../firebase/firebase';
 import { useEffect, useState } from 'react';
 import { User } from 'firebase/auth';
+import Upload from './upload';
 
 export default function Navbar() {
     // Init user state
@@ -24,11 +25,11 @@ export default function Navbar() {
     return (
         <nav className={styles.nav}>
             <Link href="/">
-                <Image width={50} height={50}
+                <Image width={35} height={35}
                     src="/logo.svg" alt="Logo" />
             </Link>
             {
-                // TODO: Add an upload
+                user && <Upload />
             }
             <SignIn user={user} />
         </nav>

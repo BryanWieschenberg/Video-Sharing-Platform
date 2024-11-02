@@ -1,9 +1,6 @@
 import * as functions from "firebase-functions/v1";
 import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
-// import {initializeApp} from "firebase-admin";
-// import {Firestore} from "firebase-admin/firestore";
-import { onCall } from "firebase-functions/v2/https";
 
 admin.initializeApp();
 
@@ -11,7 +8,8 @@ const firestore = admin.firestore();
 const storage = admin.storage();
 const rawVideoBucketName = "bnw-raw-videos";
 
-export const createUser = functions.region("us-west1").auth.user().onCreate((user) => {
+// Use `v1` for the `auth.user().onCreate` trigger
+export const createUser = functions.region("us-central1").auth.user().onCreate((user) => {
     const userInfo = {
         uid: user.uid,
         email: user.email,
@@ -22,10 +20,11 @@ export const createUser = functions.region("us-west1").auth.user().onCreate((use
     return Promise.resolve();
 });
 
-export const generateUploadUrl = onCall({maxInstances: 1}, async (request) => {
-    // Check if the user's authenticated
+// Use `v1` for `generateUploadUrl` as an HTTPS callable function
+export const generateUploadUrl = functions.https.onCall(async (request) => {
+    // Check if the user is authenticated
     if (!request.auth) {
-        throw new functions.https.HttpsError (
+        throw new functions.https.HttpsError(
             "failed-precondition",
             "The function must be called while authenticated."
         );
@@ -38,12 +37,12 @@ export const generateUploadUrl = onCall({maxInstances: 1}, async (request) => {
     // Generate a unique file name
     const fileName = `${auth.uid}-${Date.now()}-${data.fileExtension}`;
 
-    // Get a v4 signed URL for uploading file
+    // Get a v4 signed URL for uploading the file
     const [url] = await bucket.file(fileName).getSignedUrl({
         version: "v4",
         action: "write",
         expires: Date.now() + 15 * 60 * 1000, // 15 minutes
     });
 
-    return {url, fileName};
+    return { url, fileName };
 });
