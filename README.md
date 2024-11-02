@@ -18,6 +18,6 @@ A full-stack web application that allows users to share videos. This project inc
 - Frontend: React, Next.js, TypeScript, CSS
 - Backend: Node.js
 - Video Processing: FFmpeg
-- Database: Google Cloud, Firebase
+- Cloud Storage: Google Cloud
 - Containerization: Docker
-- Authentication: JWT-based user authentication
+- Authentication: Firebase-based user authentication
